@@ -32,13 +32,26 @@ func (pool *Pool) Start() {
 			break
 		case client := <-pool.Unregister:
 			delete(pool.Clients, client)
+			fmt.Println("Size of Connection Pool: ", len(pool.Clients))
+			for client, _ := range pool.Clients {
+				fmt.Println(client)
+				client.Connection.WriteJSON(Message{Type: 1, Body: "User Disconnected..."})
+			}
+			break
 		case message := <-pool.Broadcast:
+			fmt.Println("Sending message to all clients in Pool")
 			for client := range pool.Clients {
+				err := client.Connection.WriteJSON(message)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
 				if client.Id == message.Sender.Id {
 					continue
 				}
 				client.Send <- message
 			}
+			break
 		}
 	}
 }

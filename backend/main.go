@@ -7,9 +7,7 @@ import (
 	"github.com/Jseongwon/ChatGolang/pkg/websocket"
 )
 
-func serveWS(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
-	websocket.ServeWs(pool, w, r)
-
+func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
 	fmt.Println("websocket endpoint reached")
 
 	// Upgrade this connection to a WebSocket
@@ -31,7 +29,7 @@ func setupRoutes() {
 	go pool.Start()
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		websocket.ServeWs(pool, w, r)
+		serveWs(pool, w, r)
 	})
 }
 
